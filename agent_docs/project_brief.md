@@ -1,10 +1,11 @@
-# Project brief — field-window (working name)
+# Project brief — Clear Hour
 
-DEV Hacktoberfest Week 1 "Touch Grass" challenge. Deadline: Mon 2026-10-12 06:59 UTC.
+DEV Hacktoberfest Week 1 "Touch Grass" challenge. Deadline: Mon 2026-10-12 06:59 UTC. Primary prize category: Best Use of TabPFN.
 
-Direction (not final): use REAL, openly licensed public outdoor observation records near Islamabad/Rawalpindi (candidate source: iNaturalist) to
+**Clear Hour**: a local, open-source forecaster that ranks the hours of tomorrow by how breathable the air is in Islamabad/Rawalpindi, so a person knows when to go outside during smog season.
 
-a) fine-tune a small open model on Tinker for a task we will define from the data, evaluated against baselines on a hand-labelled held-out set, and
-b) use TabPFN to forecast what/when a person is likely to observe on an outing, joined with Open-Meteo weather, evaluated leave-one-season-out vs simple baselines.
+- TabPFN (local, open) learns from years of real hourly air-quality + weather history (Open-Meteo Air Quality API + Open-Meteo archive weather).
+- The forecast for a specific day is committed to git BEFORE that day, then checked against actuals.
+- Tinker: optional, only if ahead of schedule.
 
-The forecast for Sunday 2026-10-11 will be committed to git BEFORE a real outing and then checked.
+History: the earlier iNaturalist bird plan was dropped (see MEMORY.md, Key decisions).
