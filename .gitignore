@@ -7,3 +7,4 @@ out/
 *.tar
 labels/*.jsonl
 !labels/sample.jsonl
+data/processed/

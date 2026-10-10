@@ -13,7 +13,9 @@ Python (uv venv, 3.12), CPU torch, tinker, tabpfn, pandas, scikit-learn, request
 - iNaturalist data probe: tested, plan dropped
 - Air-quality feasibility probe: tested (`scripts/aq_probe.py` → results/aq_probe.md, 2026-10-10)
 - Ground-truth probe (OpenAQ): tested (`scripts/ground_truth_probe.py` → results/ground_truth_probe.md, 2026-10-10)
-- Dataset build / features / TabPFN model / committed forecast / scoring: planned
+- Dataset (`src/dataset.py` → data/processed/hourly.parquet, 11,669 rows, 26 features): tested (built 2026-10-10)
+- Evaluation (`eval/evaluate.py dev|test|report` → results/evaluation.md): tested. DEV run then TEST run ONCE (2026-10-11 ~01:08 PKT); results/eval_test.json exists, so the held-out TEST set is spent
+- Forecast card / committed forecast / scoring vs sensor: planned
 
 ## Capability grid
 Run 2026-10-10 ~22:04 PKT, `.venv/Scripts/python scripts/probes.py` (results/probes.md)
@@ -35,6 +37,13 @@ Open-Meteo Air Quality @33.6,73.05 (2026-10-10; results/aq_probe.md):
 - Weather archive joins 100% on timestamps (Asia/Karachi, both UTC+5); boundary_layer_height null 2024-01-01→2024-07-01 (4,368 h).
 - Artifacts: 2022-12-14/15 daily pm2_5 ~0.8 (implausible) → exclude. Highest days ~110 µg/m³ (Nov 2024).
 - License: CC BY 4.0; free API non-commercial, <10k calls/day, 5k/h, 600/min. Must attribute CAMS + Open-Meteo.
+Evaluation (results/evaluation.md; TRAIN 2025-05-29→2026-08-10, DEV 08-11→09-09, TEST 09-10→10-09):
+- DEV: HistGBR best (MAE 9.1, ρ 0.663); TabPFN MAE 10.1, ρ 0.571; B2 MAE 32.3, ρ 0.614; raw CAMS best top-window hit (63%).
+- TEST (once): TabPFN best MAE 10.3 / RMSE 14.6 / median within-day ρ 0.675 (CI 0.53–0.78); HistGBR 10.8 / 0.644; B2 22.1 / 0.544; raw CAMS 16.1 / 0.564. TabPFN beats B2 on MAE (diff CI [-17.0,-6.9]); ranking vs B2 not significant (diff CI [-0.04,0.29]). Top-2h-window hit: B2 43%, TabPFN 37%, raw CAMS 30%.
+- Bias baselines over-correct out of winter: TRAIN mean(monitor−CAMS) +25.7 vs DEV −6.6, TEST +3.4.
+- Validity: sensor vs embassy 5,385 h overlap, hourly r 0.81, daily r 0.95, sensor +14.7 µg/m³ higher (ratio 1.21).
+- TabPFN v2 CPU fit+predict ~55–85 min (10k context rows, ~7–8 GB RAM).
+
 Ground truth — OpenAQ v3, bbox ~50 km (results/ground_truth_probe.md):
 - 55 locations; only 2 reference-grade, both the **US Embassy Islamabad** BAM (15 km NE of CAMS point): StateAir feed 8634 (2019-05→2025-03-04) + AirNow feed 233470 (2021-08→**2026-02-16**). Merged: 49,875 valid h, 15.6% missing, 48 gaps >24 h. **No reference monitor is live now.**
 - 31 current low-cost PM2.5 sites (AirGradient + Hawanama). Best: Rawalpindi Women University 4554236 (AirGradient, 5.2 km): 2025-05-29→now, 2.5% missing, 167/168 h last week, latest reading ~2 h old. Usable to score yesterday/today.
@@ -46,6 +55,12 @@ Ground truth — OpenAQ v3, bbox ~50 km (results/ground_truth_probe.md):
 - iNaturalist (birds, 25 km) probed earlier and dropped: 822 records, 92 dates, 5% descriptions.
 
 ## Key decisions
+- 2026-10-10 GREEN LIGHT decisions (user):
+  - Ground truth = OpenAQ location 4554236 (Rawalpindi Women University, AirGradient, 5.2 km, CC BY 4.0, attribution "The Urban Unit"). Stated publicly as an UNCALIBRATED LOW-COST sensor. Embassy monitor (dead since 2026-02-16) used only as a validity check.
+  - Model = TabPFN v2 (Apache-2.0 + attribution). Stop retrying v3.5; partial v3.5 downloads deleted 2026-10-10.
+  - Task = correct CAMS to predict hourly PM2.5 at that sensor, then RANK the hours of a day. Product metric = within-day Spearman.
+- Split: TEST = last 30 days, DEV = 30 days before, TRAIN = earlier; TEST evaluated once (eval/evaluate.py refuses a second run). For TEST all models refit on TRAIN+DEV (pre-registered).
+- TabPFN on CPU needs `ignore_pretraining_limits=True` for >1,000 rows; context capped at most recent 10,000 rows; ~55 min per fit+predict.
 - 2026-10-10 PIVOT: iNaturalist bird plan dropped → Clear Hour. Reasons: ~4 competing bird-ID entries already published in this challenge; only 822 research-grade Aves records / 92 distinct dates locally; 5% have descriptions.
 - Exclude 2022-12-14/15 (CAMS artifact) from training.
 - TabPFN model = v2 (classifier + regressor), local CPU. Not the hosted API.
@@ -57,13 +72,10 @@ Ground truth — OpenAQ v3, bbox ~50 km (results/ground_truth_probe.md):
 - `.gitignore` uses `data/raw/*` + `!data/raw/.gitkeep` so the dir stays tracked but contents don't.
 
 ## Open questions
-- Scoring target for the committed forecast: low-cost AirGradient 4554236 (current, but uncalibrated) vs nothing live from the embassy. Calibrate low-cost vs embassy on their overlap (2025-05→2026-02)? {{PLACEHOLDER}}
-- Retry TabPFN v3.5 later (HF_TOKEN / different network) or stay on v2? {{PLACEHOLDER}}
-- Target definition (pm2_5 per hour? rank of hours?) and baselines: {{PLACEHOLDER}}
 - Which day gets the committed forecast: {{PLACEHOLDER}}
 
 ## File map
 - `AGENTS.md` rules · `CLAUDE.md` pointer · `REVIEW-CHECKLIST.md`
 - `agent_docs/` brief, stack, testing
-- `scripts/probes.py` capability probes, `scripts/data_probe.py` iNat probe (dropped), `scripts/aq_probe.py` AQ probe (cache data/raw/aq/), `scripts/ground_truth_probe.py` OpenAQ probe (cache data/raw/openaq/), `scripts/tabpfn_check.py <version>` · `src/` lib · `train/` Tinker · `eval/` eval
+- `scripts/probes.py` capability probes, `scripts/data_probe.py` iNat probe (dropped), `scripts/aq_probe.py` AQ probe (cache data/raw/aq/), `scripts/ground_truth_probe.py` OpenAQ probe (cache data/raw/openaq/), `scripts/tabpfn_check.py <version>`, `src/dataset.py`, `eval/evaluate.py` (writes results/eval_{dev,test}.json + evaluation.md); data/processed/ ignored · `src/` lib · `train/` Tinker · `eval/` eval
 - `data/raw/` (ignored) · `data/sample/` small redistributable samples · `labels/` · `results/` · `docs/`
