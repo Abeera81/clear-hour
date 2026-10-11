@@ -55,15 +55,17 @@ def best_remaining(hourly: list[float], from_hour: int) -> dict | None:
 
 def recommendation(day: str, model_label: str, entry: dict, remaining: dict | None, now_h: int | None) -> tuple[str, str | None]:
     c, d = entry["windows"]["cleanest"], entry["windows"]["dirtiest"]
-    spread = d["pm25"] - c["pm25"]
     if now_h is not None and int(c["start"][:2]) < now_h and remaining:
         head = (f"The cleanest window ({c['start']}-{c['end']}) has already started or passed; best remaining window today is "
                 f"{remaining['start']}-{remaining['end']} (~{remaining['pm25']:.0f} µg/m³).")
+        best_val = remaining["pm25"]
     else:
         head = f"Best time to go out: {c['start']}-{c['end']} (~{c['pm25']:.0f} µg/m³)."
-    line = f"{head} Avoid {d['start']}-{d['end']} (~{d['pm25']:.0f} µg/m³); the best window is ~{spread:.0f} µg/m³ cleaner than the worst."
+        best_val = c["pm25"]
+    spread = d["pm25"] - best_val
+    line = f"{head} Avoid {d['start']}-{d['end']} (~{d['pm25']:.0f} µg/m³); that is ~{spread:.0f} µg/m³ worse than the best window." if spread > 0 else f"{head} Avoid {d['start']}-{d['end']} (~{d['pm25']:.0f} µg/m³)."
     note = None
-    if c["pm25"] > EPA_MODERATE_CEILING:
+    if best_val > EPA_MODERATE_CEILING:
         note = (f"Even the cleanest window is above {EPA_MODERATE_CEILING} µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read "
                 f"~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.")
     return line, note

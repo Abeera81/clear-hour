@@ -20,7 +20,7 @@ python -m clearhour --model tabpfn       # TabPFN v2: ~30-90 min on CPU the firs
 
 - `--save` never overwrites an existing `results/forecast_<date>.json` (it may be a committed, pre-registered forecast) unless you pass `--force`.
 - Every run saves the exact 24 x 26 feature matrix as a CSV (`results/inputs/` with `--save`, otherwise `data/processed/inputs/`), named with its fetch time, and prints its sha256, so a forecast can be audited later.
-- The fitted TabPFN model is cached in `data/processed/model_cache/` (git-ignored; it is large: ~0.3 GB at 500 rows, several GB at 10,000), so a repeat run reloads it instead of refitting. `--no-cache` turns that off.
+- The fitted TabPFN model is cached in `data/processed/model_cache/` (git-ignored; it is large: 0.3 GB at 500 rows, **6.3 GB** at 10,000), so a repeat run reloads it (about 2 minutes) instead of refitting (about 56 minutes here). Predictions from the reloaded model match the fitted one to within 0.07 µg/m³. `--no-cache` turns that off.
 - Default B2 uses 24 hour-of-day offsets packaged in `src/clearhour/b2_offsets.json` (fitted on 11,693 sensor readings up to 2026-10-10 22:00; they reproduce the committed pre-registered B2 exactly). `--refit` re-fits them from fresh OpenAQ data.
 - The dates it accepts are today up to the last day for which Open-Meteo has a complete air-quality forecast (through 2026-10-15 when checked, i.e. today + 4 days). Output is for one uncalibrated low-cost sensor; ranking is more reliable than the absolute level.
 
@@ -35,7 +35,7 @@ Clear Hour — 2026-10-11 (Asia/Karachi) — model: B2 CAMS+hour bias
   Cleanest 2h window : 15:00-17:00   ~54.0 µg/m³
   Dirtiest 2h window : 22:00-00:00   ~81.8 µg/m³
 
-  -> Best time to go out: 15:00-17:00 (~54 µg/m³). Avoid 22:00-00:00 (~82 µg/m³); the best window is ~28 µg/m³ cleaner than the worst.
+  -> Best time to go out: 15:00-17:00 (~54 µg/m³). Avoid 22:00-00:00 (~82 µg/m³); that is ~28 µg/m³ worse than the best window.
      Note: Even the cleanest window is above 35.4 µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read ~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.
 
   24 h at a glance (low = clean):
@@ -49,8 +49,8 @@ Clear Hour — 2026-10-11 (Asia/Karachi) — model: B2 CAMS+hour bias
 
   Other models, same inputs: B0 raw CAMS: cleanest 05:00-07:00
 
-  Inputs: live forecast fetched 2026-10-11T06:29:42+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-11_20261011T062942Z.csv
-          sha256 55a8a4c4c3597c21b2b9231fa93f16758057fa8694919019d6684e5a8638b064
+  Inputs: live forecast fetched 2026-10-11T07:30:07+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-11_20261011T073007Z.csv
+          sha256 227fcdb3de19e9cb03f820314ebc2c8dbed39e392b47f5abeefb9693addc19ba
   B2 hour-bias offsets: 11693 sensor readings up to 2026-10-10 22:00:00 (packaged offsets)
 
 ------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ Sensor data: AirGradient via The Urban Unit (CC BY 4.0), from OpenAQ. Uncalibrat
 
 Predicts PM2.5 at ONE uncalibrated low-cost sensor from live forecasts; ranking is more reliable than absolute level. One day is an anecdote.
 Built with PriorLabs-TabPFN
-clearhour 0.1.0 - generated 2026-10-11 11:29 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
+clearhour 0.1.0 - generated 2026-10-11 12:30 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
 ```
 </details>
 
@@ -72,7 +72,7 @@ Clear Hour — 2026-10-13 (Asia/Karachi) — model: B2 CAMS+hour bias
   Cleanest 2h window : 15:00-17:00   ~49.0 µg/m³
   Dirtiest 2h window : 00:00-02:00   ~101.3 µg/m³
 
-  -> Best time to go out: 15:00-17:00 (~49 µg/m³). Avoid 00:00-02:00 (~101 µg/m³); the best window is ~52 µg/m³ cleaner than the worst.
+  -> Best time to go out: 15:00-17:00 (~49 µg/m³). Avoid 00:00-02:00 (~101 µg/m³); that is ~52 µg/m³ worse than the best window.
      Note: Even the cleanest window is above 35.4 µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read ~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.
 
   24 h at a glance (low = clean):
@@ -86,8 +86,8 @@ Clear Hour — 2026-10-13 (Asia/Karachi) — model: B2 CAMS+hour bias
 
   Other models, same inputs: B0 raw CAMS: cleanest 14:00-16:00
 
-  Inputs: live forecast fetched 2026-10-11T06:29:44+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-13_20261011T062944Z.csv
-          sha256 437c11708fabef8a2db5d8fe7f02cac40883ef9c50ab5748b26fe0232f019a63
+  Inputs: live forecast fetched 2026-10-11T07:30:11+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-13_20261011T073011Z.csv
+          sha256 d9903440d415db9369057c6b377e39725c846c663c8973de4a4d45cf4a1d39ab
   B2 hour-bias offsets: 11693 sensor readings up to 2026-10-10 22:00:00 (packaged offsets)
 
 ------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ Sensor data: AirGradient via The Urban Unit (CC BY 4.0), from OpenAQ. Uncalibrat
 
 Predicts PM2.5 at ONE uncalibrated low-cost sensor from live forecasts; ranking is more reliable than absolute level. One day is an anecdote.
 Built with PriorLabs-TabPFN
-clearhour 0.1.0 - generated 2026-10-11 11:29 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
+clearhour 0.1.0 - generated 2026-10-11 12:30 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
 ```
 </details>
 
@@ -117,35 +117,35 @@ clearhour: error: results\forecast_2026-10-11.json already exists (it may be a c
 ```
 </details>
 
-<details><summary>TabPFN path, reduced context for a quick check (<code>--model tabpfn --tabpfn-rows 500</code>, second run: fitted model loaded from cache)</summary>
+<details><summary>TabPFN, full 10,000-row context: <code>python -m clearhour --model tabpfn --yes</code> (first run: fitted, 56 min wall clock)</summary>
 
 ```text
 NOTE: TabPFN v2 runs locally on CPU. The first run fits 10,000 rows: expect ~30-90 minutes and ~8 GB RAM; the fitted model is cached, so later runs reuse it.
-Fetching live CAMS air-quality and weather forecasts for 2026-10-12 ...
+Fetching live CAMS air-quality and weather forecasts for 2026-10-11 ...
 Building the training table from OpenAQ + Open-Meteo (first run takes a minute or two) ...
-loading cached fitted model tabpfn_v2_d241b9a86182b12c3ea1.tabpfn_fit
-Clear Hour — 2026-10-12 (Asia/Karachi) — model: M1 TabPFN v2
+fitting TabPFN v2 on 10000 rows (this is the slow step) ...
+Clear Hour — 2026-10-11 (Asia/Karachi) — model: M1 TabPFN v2
 
-  Cleanest 2h window : 13:00-15:00   ~61.8 µg/m³
-  Dirtiest 2h window : 22:00-00:00   ~95.5 µg/m³
+  Cleanest 2h window : 15:00-17:00   ~49.2 µg/m³
+  Dirtiest 2h window : 22:00-00:00   ~78.4 µg/m³
 
-  -> Best time to go out: 13:00-15:00 (~62 µg/m³). Avoid 22:00-00:00 (~96 µg/m³); the best window is ~34 µg/m³ cleaner than the worst.
+  -> Best time to go out: 15:00-17:00 (~49 µg/m³). Avoid 22:00-00:00 (~78 µg/m³); the best window is ~29 µg/m³ cleaner than the worst.
      Note: Even the cleanest window is above 35.4 µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read ~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.
 
   24 h at a glance (low = clean):
-  ▂▂▁▁▁▁▂▃▃▄▃▂▁▁▁▁▁▂▄▆▇███
+  ▄▅▃▃▂▂▂▂▃▃▃▃▂▃▂▁▁▃▅▆▇▇██
   00    06    12    18  23
 
-  00h  67.2   01h  66.1   02h  64.0   03h  62.7   04h  63.3   05h  64.1
-  06h  66.3   07h  69.7   08h  73.6   09h  75.1   10h  71.4   11h  66.3
-  12h  63.1   13h  61.8   14h  61.8   15h  62.2   16h  62.4   17h  67.0
-  18h  75.3   19h  84.6   20h  91.9   21h  95.4   22h  95.4   23h  95.7
+  00h  63.4   01h  64.3   02h  57.6   03h  55.7   04h  53.3   05h  51.3
+  06h  51.4   07h  53.3   08h  55.3   09h  57.4   10h  57.2   11h  56.2
+  12h  55.2   13h  56.9   14h  52.5   15h  49.6   16h  48.8   17h  59.4
+  18h  65.1   19h  69.9   20h  73.5   21h  74.9   22h  78.8   23h  78.1
 
-  Other models, same inputs: B0 raw CAMS: cleanest 15:00-17:00; B2 CAMS+hour bias: cleanest 15:00-17:00
+  Other models, same inputs: B0 raw CAMS: cleanest 05:00-07:00; B2 CAMS+hour bias: cleanest 15:00-17:00
 
-  Inputs: live forecast fetched 2026-10-11T06:25:02+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-12_20261011T062502Z.csv
-          sha256 09f34c8448870da0e9dbaf762da52cee4ddbe23f0de6aaae7a20d491b1c2fcaf
-  TabPFN v2: 500 training rows, loaded from cache in 5 s
+  Inputs: live forecast fetched 2026-10-11T06:25:52+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-11_20261011T062552Z.csv
+          sha256 55a8a4c4c3597c21b2b9231fa93f16758057fa8694919019d6684e5a8638b064
+  TabPFN v2: 10000 training rows, fitted in 3351 s
 
 ------------------------------------------------------------------------------
 Weather data by Open-Meteo.com (CC BY 4.0); air-quality model data: Copernicus Atmosphere Monitoring Service (CAMS) via Open-Meteo.
@@ -153,9 +153,14 @@ Sensor data: AirGradient via The Urban Unit (CC BY 4.0), from OpenAQ. Uncalibrat
 
 Predicts PM2.5 at ONE uncalibrated low-cost sensor from live forecasts; ranking is more reliable than absolute level. One day is an anecdote.
 Built with PriorLabs-TabPFN
-clearhour 0.1.0 - generated 2026-10-11 11:25 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
+clearhour 0.1.0 - generated 2026-10-11 12:22 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
 ```
-First run of the same command fitted in 55 s and wrote a 308 MB cache file; the repeat run loaded it in 5 s and gave identical windows. This reduced 500-row context is a smoke test, not what the evaluation used (10,000 rows).
+This is the real first run on this laptop (CPU, 16 GB RAM): fit 3,351 s, 56 min 27 s in total. Its inputs had not changed since the pre-registered forecast, and it reproduced the committed TabPFN late-entry windows exactly (15:00-17:00 at 49.2; 22:00-00:00 at 78.4). The fitted model was then cached on disk: **6.3 GB** (it stores the transformer cache for all 10,000 rows).
+</details>
+
+<details><summary>Repeat run reuses the cache (118 s to load instead of ~56 min to fit), and live inputs move</summary>
+
+A second run an hour later loaded the cached model in 118 s (2 min 39 s total) and printed `TabPFN v2: 10000 training rows, loaded from cache in 118 s`. Its answer was different (cleanest 05:00-07:00 at ~52.2, dirtiest 22:00-00:00 at ~78.2) **because the live weather forecast had been updated in between**: the feature-matrix hash changed from `55a8a4c4...` (06:25 UTC) to `227fcdb3...` (07:22 UTC). Comparing the two saved matrices, 8 of the 26 features changed, all of them weather (boundary-layer height by up to 695 m, relative humidity by up to 17 points, wind, pressure, temperature, and forecast precipitation +0.3 mm); the CAMS pollutant inputs were identical, which is why the B2 answer did not move at all. To check the cache itself, I fed the cached model the *first* run's saved matrix: it reproduces the freshly fitted predictions to within 0.074 µg/m³ (5 of 24 hourly values differ in the second decimal; not bit-for-bit), far below the 1.5 µg/m³ margins that decide the windows. Two lessons: TabPFN's pick is sensitive to the weather forecast (boundary-layer height in particular), and a live forecast moves when its inputs update, so commit the one you want to be judged on before the day; and a reduced context (`--tabpfn-rows 500`: 55 s fit, 308 MB cache) is available as a quick smoke test but is not what the evaluation used.
 </details>
 
 ## Headline: how much data does TabPFN need?
