@@ -8,3 +8,4 @@ out/
 labels/*.jsonl
 !labels/sample.jsonl
 data/processed/
+*.egg-info/

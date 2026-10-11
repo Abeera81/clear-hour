@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clearhour"
+version = "0.1.0"
+description = "Clear Hour: rank tomorrow's hours by air quality in Islamabad/Rawalpindi (CLI). Built with PriorLabs-TabPFN."
+requires-python = ">=3.10"
+license = "MIT"
+# Runtime dependencies are pinned in requirements.txt (CPU torch needs its own index); install that first.
+dependencies = []
+
+[tool.setuptools]
+packages = ["clearhour"]
+
+[tool.setuptools.package-dir]
+clearhour = "src/clearhour"
+
+[tool.setuptools.package-data]
+clearhour = ["b2_offsets.json"]
