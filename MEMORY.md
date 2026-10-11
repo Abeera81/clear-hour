@@ -7,6 +7,7 @@
 Python (uv venv, 3.12), CPU torch, tinker, tabpfn, pandas, scikit-learn, requests, astral, pydantic, python-dotenv. Windows + Git Bash. Details: `agent_docs/tech_stack.md`.
 
 ## Status
+- Early read-only mid-day check 2026-10-11 (not scoring; no new files/commits touched forecast): pulled measured hourly PM2.5 from OpenAQ sensor 4554236 for 2026-10-11, 00:00-18:00 (19 h, 19:00-23:00 not yet measured). Measured ranged 18.2 (17h) to 84.1 (00h), notably lower overall than all three committed predictions' afternoon lows (B0 CAMS ~35-40 flat, B2 ~55-70, TabPFN ~49-65 vs measured 18-36 in 14-17h); measured 00-06h spiked higher (66-84) than CAMS-based models expected. AGENTS.md: added rules 12-16 (frozen forecast files read-only, no scoring yet, no public-repo/GitHub-settings changes, no force-push/amend, never touch/print .env). docs/outing_log.md: added 2026-10-11 ~17:20 entry (committed `349ee56`, pushed).
 - Repo bootstrap + agent docs: implemented; remote origin = https://github.com/Abeera81/field-window
 - Env (uv venv py3.12, deps, requirements.txt): tested
 - Capability probes: tested; Tinker ✅; TabPFN ✅ on **v2** only (v3.5 download stalls)
