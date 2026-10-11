@@ -6,6 +6,158 @@ Clear Hour is a local, open-source forecaster that ranks the hours of tomorrow b
 
 Demo page: [`docs/index.html`](docs/index.html) (self-contained; open it in a browser). Screenshots: [phone 390 px](results/demo_390.png), [desktop 1280 px](results/demo_1280.png).
 
+## Try it
+
+`clearhour` ranks the hours of a day by predicted PM2.5 at the sensor, from live CAMS + weather forecasts. After the install steps in [How to reproduce](#how-to-reproduce) (step 1 only):
+
+```bash
+python -m clearhour                      # today, instant (B2 hour-of-day bias on live CAMS); no API key needed
+python -m clearhour --date 2026-10-13    # a specific day; works for today and the next few days
+python -m clearhour --json               # machine-readable
+python -m clearhour --save               # also writes results/forecast_<date>.json + the feature matrix with its sha256
+python -m clearhour --model tabpfn       # TabPFN v2: ~30-90 min on CPU the first time, ~8 GB RAM, needs OPENAQ_API_KEY
+```
+
+- `--save` never overwrites an existing `results/forecast_<date>.json` (it may be a committed, pre-registered forecast) unless you pass `--force`.
+- Every run saves the exact 24 x 26 feature matrix as a CSV (`results/inputs/` with `--save`, otherwise `data/processed/inputs/`), named with its fetch time, and prints its sha256, so a forecast can be audited later.
+- The fitted TabPFN model is cached in `data/processed/model_cache/` (git-ignored; it is large: ~0.3 GB at 500 rows, several GB at 10,000), so a repeat run reloads it instead of refitting. `--no-cache` turns that off.
+- Default B2 uses 24 hour-of-day offsets packaged in `src/clearhour/b2_offsets.json` (fitted on 11,693 sensor readings up to 2026-10-10 22:00; they reproduce the committed pre-registered B2 exactly). `--refit` re-fits them from fresh OpenAQ data.
+- The dates it accepts are today up to the last day for which Open-Meteo has a complete air-quality forecast (through 2026-10-15 when checked, i.e. today + 4 days). Output is for one uncalibrated low-cost sensor; ranking is more reliable than the absolute level.
+
+Real terminal output (captured 2026-10-11, Windows, Git Bash; the first line goes to stderr):
+
+<details><summary>Today (default model, B2): <code>python -m clearhour</code></summary>
+
+```text
+Fetching live CAMS air-quality and weather forecasts for 2026-10-11 ...
+Clear Hour — 2026-10-11 (Asia/Karachi) — model: B2 CAMS+hour bias
+
+  Cleanest 2h window : 15:00-17:00   ~54.0 µg/m³
+  Dirtiest 2h window : 22:00-00:00   ~81.8 µg/m³
+
+  -> Best time to go out: 15:00-17:00 (~54 µg/m³). Avoid 22:00-00:00 (~82 µg/m³); the best window is ~28 µg/m³ cleaner than the worst.
+     Note: Even the cleanest window is above 35.4 µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read ~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.
+
+  24 h at a glance (low = clean):
+  ▂▃▂▂▂▂▃▄▄▄▄▅▄▃▂▁▁▂▄▅▅▆▇█
+  00    06    12    18  23
+
+  00h  58.5   01h  60.9   02h  58.6   03h  56.7   04h  56.9   05h  56.8
+  06h  60.0   07h  65.2   08h  66.5   09h  65.3   10h  67.1   11h  69.5
+  12h  65.8   13h  61.5   14h  57.8   15h  53.1   16h  54.9   17h  59.0
+  18h  67.0   19h  70.9   20h  71.5   21h  73.7   22h  78.8   23h  84.8
+
+  Other models, same inputs: B0 raw CAMS: cleanest 05:00-07:00
+
+  Inputs: live forecast fetched 2026-10-11T06:29:42+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-11_20261011T062942Z.csv
+          sha256 55a8a4c4c3597c21b2b9231fa93f16758057fa8694919019d6684e5a8638b064
+  B2 hour-bias offsets: 11693 sensor readings up to 2026-10-10 22:00:00 (packaged offsets)
+
+------------------------------------------------------------------------------
+Weather data by Open-Meteo.com (CC BY 4.0); air-quality model data: Copernicus Atmosphere Monitoring Service (CAMS) via Open-Meteo.
+Sensor data: AirGradient via The Urban Unit (CC BY 4.0), from OpenAQ. Uncalibrated low-cost sensor; not endorsed by The Urban Unit.
+
+Predicts PM2.5 at ONE uncalibrated low-cost sensor from live forecasts; ranking is more reliable than absolute level. One day is an anecdote.
+Built with PriorLabs-TabPFN
+clearhour 0.1.0 - generated 2026-10-11 11:29 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
+```
+</details>
+
+<details><summary>A future date: <code>python -m clearhour --date 2026-10-13</code></summary>
+
+```text
+Fetching live CAMS air-quality and weather forecasts for 2026-10-13 ...
+Clear Hour — 2026-10-13 (Asia/Karachi) — model: B2 CAMS+hour bias
+
+  Cleanest 2h window : 15:00-17:00   ~49.0 µg/m³
+  Dirtiest 2h window : 00:00-02:00   ~101.3 µg/m³
+
+  -> Best time to go out: 15:00-17:00 (~49 µg/m³). Avoid 00:00-02:00 (~101 µg/m³); the best window is ~52 µg/m³ cleaner than the worst.
+     Note: Even the cleanest window is above 35.4 µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read ~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.
+
+  24 h at a glance (low = clean):
+  ██▆▄▄▃▄▄▄▄▃▃▃▂▁▁▁▂▃▄▄▄▃▂
+  00    06    12    18  23
+
+  00h 103.0   01h  99.7   02h  88.3   03h  75.4   04h  68.4   05h  66.4
+  06h  68.1   07h  73.4   08h  73.8   09h  68.2   10h  65.8   11h  66.8
+  12h  62.5   13h  56.9   14h  50.0   15h  48.2   16h  49.7   17h  55.8
+  18h  66.5   19h  70.2   20h  75.2   21h  72.9   22h  65.3   23h  58.2
+
+  Other models, same inputs: B0 raw CAMS: cleanest 14:00-16:00
+
+  Inputs: live forecast fetched 2026-10-11T06:29:44+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-13_20261011T062944Z.csv
+          sha256 437c11708fabef8a2db5d8fe7f02cac40883ef9c50ab5748b26fe0232f019a63
+  B2 hour-bias offsets: 11693 sensor readings up to 2026-10-10 22:00:00 (packaged offsets)
+
+------------------------------------------------------------------------------
+Weather data by Open-Meteo.com (CC BY 4.0); air-quality model data: Copernicus Atmosphere Monitoring Service (CAMS) via Open-Meteo.
+Sensor data: AirGradient via The Urban Unit (CC BY 4.0), from OpenAQ. Uncalibrated low-cost sensor; not endorsed by The Urban Unit.
+
+Predicts PM2.5 at ONE uncalibrated low-cost sensor from live forecasts; ranking is more reliable than absolute level. One day is an anecdote.
+Built with PriorLabs-TabPFN
+clearhour 0.1.0 - generated 2026-10-11 11:29 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
+```
+</details>
+
+<details><summary>Errors are one clear line, exit code 2, no traceback</summary>
+
+```text
+$ python -m clearhour --date 2026-10-09
+clearhour: error: 2026-10-09 is in the past. Clear Hour forecasts today (2026-10-11) and the next few days.
+$ python -m clearhour --date 2026-10-16
+clearhour: error: Open-Meteo does not yet have a complete air-quality forecast for 2026-10-16. The latest hour with data is 2026-10-15 17:00 (local); try a date up to 2026-10-15.
+$ HTTPS_PROXY=http://127.0.0.1:9 python -m clearhour   # simulated: no network
+Fetching live CAMS air-quality and weather forecasts for 2026-10-11 ...
+clearhour: error: Cannot reach air-quality-api.open-meteo.com (ProxyError). Check your internet connection and try again.
+$ OPENAQ_API_KEY= python -m clearhour --model tabpfn --yes   # key missing
+clearhour: error: OPENAQ_API_KEY is not set. Training data comes from OpenAQ (free key: https://explore.openaq.org/register). Put it in .env as OPENAQ_API_KEY=... (see .env.example). The default --model b2 needs no key.
+$ python -m clearhour --date 2026-10-11 --save   # a committed forecast exists
+clearhour: error: results\forecast_2026-10-11.json already exists (it may be a committed, pre-registered forecast). Not overwriting; pass --force to replace it.
+```
+</details>
+
+<details><summary>TabPFN path, reduced context for a quick check (<code>--model tabpfn --tabpfn-rows 500</code>, second run: fitted model loaded from cache)</summary>
+
+```text
+NOTE: TabPFN v2 runs locally on CPU. The first run fits 10,000 rows: expect ~30-90 minutes and ~8 GB RAM; the fitted model is cached, so later runs reuse it.
+Fetching live CAMS air-quality and weather forecasts for 2026-10-12 ...
+Building the training table from OpenAQ + Open-Meteo (first run takes a minute or two) ...
+loading cached fitted model tabpfn_v2_d241b9a86182b12c3ea1.tabpfn_fit
+Clear Hour — 2026-10-12 (Asia/Karachi) — model: M1 TabPFN v2
+
+  Cleanest 2h window : 13:00-15:00   ~61.8 µg/m³
+  Dirtiest 2h window : 22:00-00:00   ~95.5 µg/m³
+
+  -> Best time to go out: 13:00-15:00 (~62 µg/m³). Avoid 22:00-00:00 (~96 µg/m³); the best window is ~34 µg/m³ cleaner than the worst.
+     Note: Even the cleanest window is above 35.4 µg/m³ (the US EPA 'Moderate' ceiling) at this sensor, which read ~15 µg/m³ higher than the US Embassy monitor in our comparison; consider limiting strenuous outdoor activity.
+
+  24 h at a glance (low = clean):
+  ▂▂▁▁▁▁▂▃▃▄▃▂▁▁▁▁▁▂▄▆▇███
+  00    06    12    18  23
+
+  00h  67.2   01h  66.1   02h  64.0   03h  62.7   04h  63.3   05h  64.1
+  06h  66.3   07h  69.7   08h  73.6   09h  75.1   10h  71.4   11h  66.3
+  12h  63.1   13h  61.8   14h  61.8   15h  62.2   16h  62.4   17h  67.0
+  18h  75.3   19h  84.6   20h  91.9   21h  95.4   22h  95.4   23h  95.7
+
+  Other models, same inputs: B0 raw CAMS: cleanest 15:00-17:00; B2 CAMS+hour bias: cleanest 15:00-17:00
+
+  Inputs: live forecast fetched 2026-10-11T06:25:02+00:00 UTC; feature matrix data/processed/inputs/forecast_inputs_2026-10-12_20261011T062502Z.csv
+          sha256 09f34c8448870da0e9dbaf762da52cee4ddbe23f0de6aaae7a20d491b1c2fcaf
+  TabPFN v2: 500 training rows, loaded from cache in 5 s
+
+------------------------------------------------------------------------------
+Weather data by Open-Meteo.com (CC BY 4.0); air-quality model data: Copernicus Atmosphere Monitoring Service (CAMS) via Open-Meteo.
+Sensor data: AirGradient via The Urban Unit (CC BY 4.0), from OpenAQ. Uncalibrated low-cost sensor; not endorsed by The Urban Unit.
+
+Predicts PM2.5 at ONE uncalibrated low-cost sensor from live forecasts; ranking is more reliable than absolute level. One day is an anecdote.
+Built with PriorLabs-TabPFN
+clearhour 0.1.0 - generated 2026-10-11 11:25 (Asia/Karachi); commit a saved forecast before the day if you want it pre-registered.
+```
+First run of the same command fitted in 55 s and wrote a 308 MB cache file; the repeat run loaded it in 5 s and gave identical windows. This reduced 500-row context is a smoke test, not what the evaluation used (10,000 rows).
+</details>
+
 ## Headline: how much data does TabPFN need?
 
 > **TabPFN v2 needs roughly 1,000–2,500 training hours (about 6–15 weeks of hourly data) before it matches, and then edges, a one-line hour-of-day bias baseline (B2) on hour ranking. Below that it is worse and high-variance.**
@@ -80,6 +232,7 @@ From the evaluation, plus the ones that matter for the live forecast:
 - **Fold dates were adjusted before any fit:** the F2 and F3 start dates were nudged by a few days so that N=2,500 and N=5,000 were reachable. This was done before any model ran, and the protocol was committed first, in [`7438bbc`](https://github.com/Abeera81/field-window/commit/7438bbc).
 - **I assumed the TabPFN v2 weights were plain Apache-2.0.** They are under the Prior Labs License 1.1 (Apache-2.0 plus a mandatory "Built with PriorLabs-TabPFN" display). Found when reading the licence on 2026-10-11; see [`docs/attribution.md`](docs/attribution.md).
 - **The live feature matrix for the 2026-10-11 forecast was never saved or hashed,** so "no refetch" rests on reading the code and on the B0/B2 values matching exactly. Future forecast runs must save the matrix and record its sha256.
+- **`requirements.txt` was not installable by anyone else.** It carried the PyTorch CPU `--extra-index-url` line and a `torch==2.14.1+cpu` pin, which makes `uv` refuse PyPI versions of other packages (`certifi` ...). I only found out by installing from a fresh clone while building the CLI. Torch is now its own pinned install step.
 - **TabPFN v3.5 would not download** on this machine (the weight download stalled three times), so everything uses TabPFN v2.
 - The original idea (bird-identification from iNaturalist records) was dropped before this project began: too few usable local records and several similar entries already existed.
 
@@ -91,8 +244,9 @@ Windows + Git Bash. Python 3.12 via `uv`. CPU only (no GPU needed).
 # 1. environment
 uv venv --python 3.12
 source .venv/Scripts/activate
-uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+uv pip install "torch==2.14.1" --index-url https://download.pytorch.org/whl/cpu
 uv pip install -r requirements.txt
+uv pip install -e .                   # installs the `clearhour` command (python -m clearhour)
 
 # 2. keys (git-ignored .env): copy the template and fill in
 cp .env.example .env
@@ -100,7 +254,8 @@ cp .env.example .env
 #   TABPFN_TOKEN     not needed for TabPFN v2; only used by scripts/probes.py
 #   TINKER_API_KEY   only used by scripts/probes.py (Tinker is not used for any result)
 
-# 3. dataset: pulls Open-Meteo (CAMS + weather) and OpenAQ sensor 4554236 -> data/processed/hourly.parquet
+# 3. (everything below is optional if you only want `python -m clearhour`)
+#    dataset: pulls Open-Meteo (CAMS + weather) and OpenAQ sensor 4554236 -> data/processed/hourly.parquet
 python -m src.dataset
 #    NB: the window ends yesterday, so re-running later gives more rows than the committed results used.
 #    The numbers in results/*.json are the record.
@@ -131,7 +286,7 @@ Optional probes that produced the early data findings: `python scripts/probes.py
 - **TabPFN v2** (regressor, local CPU, no tuning) — Prior Labs; Prior Labs License 1.1, see [`docs/attribution.md`](docs/attribution.md).
 - **Open-Meteo** air-quality (CAMS model data) and weather APIs.
 - **OpenAQ v3** for sensor measurements.
-- scikit-learn (baselines), pandas, numpy, pyarrow, requests.
+- scikit-learn (baselines), pandas, numpy, pyarrow, requests. The `clearhour` command (`src/clearhour/`) is a thin front end over the shared engine in `src/forecast.py`.
 - **Tinker was NOT used.** (`scripts/probes.py` created LoRA training clients for two models as a capability check; nothing was trained or sampled.) No other sponsor tools.
 
 ## Attribution

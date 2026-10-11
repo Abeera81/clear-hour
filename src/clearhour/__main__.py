@@ -150,6 +150,12 @@ def run(args: argparse.Namespace) -> int:
             if input("Continue? [y/N] ").strip().lower() not in ("y", "yes"):
                 raise eng.ForecastError("Cancelled. Use the default --model b2 for an instant answer.")
 
+    if args.save and not args.force:
+        target = eng.ROOT / "results" / f"forecast_{day}.json"
+        if target.exists():
+            raise eng.ForecastError(f"{target.relative_to(eng.ROOT)} already exists (it may be a committed, pre-registered forecast). "
+                                    f"Not overwriting; pass --force to replace it.")
+
     log(f"Fetching live CAMS air-quality and weather forecasts for {day} ...", q)
     live, meta = eng.live_features(day)
 
