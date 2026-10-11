@@ -1,7 +1,7 @@
 {
  "day": "2026-10-11",
- "stage": "stage1 (B0 + B2 only; TabPFN fit in progress)",
- "generated_utc": "2026-10-11T01:10:39+00:00",
+ "stage": "stage2 (all three models)",
+ "generated_utc": "2026-10-11T01:51:15+00:00",
  "input_meta": {
   "cams_span": [
    "2026-10-08 00:00:00",
@@ -16,6 +16,46 @@
  "train_rows": 11693,
  "train_last_hour": "2026-10-10 22:00:00",
  "models": {
+  "M1 TabPFN v2": {
+   "hourly": [
+    63.4,
+    64.3,
+    57.6,
+    55.7,
+    53.3,
+    51.3,
+    51.4,
+    53.3,
+    55.3,
+    57.4,
+    57.2,
+    56.2,
+    55.2,
+    56.9,
+    52.5,
+    49.6,
+    48.8,
+    59.4,
+    65.1,
+    69.9,
+    73.5,
+    74.9,
+    78.8,
+    78.1
+   ],
+   "windows": {
+    "cleanest": {
+     "start": "15:00",
+     "end": "17:00",
+     "pm25": 49.2
+    },
+    "dirtiest": {
+     "start": "22:00",
+     "end": "00:00",
+     "pm25": 78.4
+    }
+   }
+  },
   "B0 raw CAMS": {
    "hourly": [
     41.9,
@@ -185,5 +225,23 @@
    40.0,
    45.0
   ]
+ },
+ "tabpfn": {
+  "model_path": "tabpfn-v2-regressor.ckpt",
+  "train_rows": 10000,
+  "seconds": 2421
+ },
+ "late_entry": {
+  "statement": "Late entry: TabPFN committed at 06:51 (Asia/Karachi, 2026-10-11). Hours before that time had already occurred and are NOT pre-registered. B0 and B2 were committed at 06:10:46.",
+  "committed_local_approx": "06:51",
+  "from_hour": 7,
+  "pre_registered_models": [
+   "B0 raw CAMS",
+   "B2 CAMS+hour bias"
+  ],
+  "pre_registered_commit": "69c7d9e",
+  "pre_registered_at_local": "2026-10-11T06:10:46+05:00",
+  "stage1_json_sha256": "85a2e07470e249b2215d0b3cf2a19f079ba0f79603982dd483126c5712ecd03d",
+  "b0_b2_verified_identical_to_stage1": true
  }
 }

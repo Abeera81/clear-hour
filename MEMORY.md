@@ -15,7 +15,7 @@ Python (uv venv, 3.12), CPU torch, tinker, tabpfn, pandas, scikit-learn, request
 - Ground-truth probe (OpenAQ): tested (`scripts/ground_truth_probe.py` → results/ground_truth_probe.md, 2026-10-10)
 - Dataset (`src/dataset.py` → data/processed/hourly.parquet, 11,669 rows, 26 features): tested (built 2026-10-10)
 - Evaluation (`eval/evaluate.py dev|test|report` → results/evaluation.md): tested. DEV run then TEST run ONCE (2026-10-11 ~01:08 PKT); results/eval_test.json exists, so the held-out TEST set is spent
-- Forecast 2026-10-11: stage 1 (B0 raw CAMS + B2 hour-bias) committed `69c7d9e` at 2026-10-11T06:10:46+05:00 = the pre-registration. Stage 2 (TabPFN v2) = LATE ENTRY, fit running since 06:10 (~85 min CPU), committed when done; hours before its commit are NOT pre-registered. Status: implemented (stage 1 pushed; stage 2 pending)
+- Forecast 2026-10-11: stage 1 (B0 raw CAMS + B2 hour-bias) committed `69c7d9e` at 2026-10-11T06:10:46+05:00 = the pre-registration. Stage 2 (TabPFN v2) = LATE ENTRY, fit running since 06:10 (~85 min CPU), committed when done; hours before its commit are NOT pre-registered. Stage 2 TabPFN late entry fit finished 2026-10-11 06:51 local (2,421 s fit+predict); B0/B2 verified identical to stage 1 before commit. Status: implemented (both stages pushed; not yet scored)
 - Scoring (`scripts/score_forecast.py DATE [--from-hour HH]`): implemented; logic self-tested on synthetic data only, NOT yet run on real data (run after the day ends)
 
 ## Capability grid
@@ -56,6 +56,7 @@ Ground truth — OpenAQ v3, bbox ~50 km (results/ground_truth_probe.md):
 - iNaturalist (birds, 25 km) probed earlier and dropped: 822 records, 92 dates, 5% descriptions.
 
 ## Key decisions
+- RULE for all future forecast runs: save the full feature matrix to disk (e.g. data/processed/forecast_inputs_<date>.parquet) at fetch time and record its sha256 in the forecast JSON/card and here. The 2026-10-11 run did not (see frozen-inputs note below).
 - Forecast 2026-10-11 inputs (frozen): `src/forecast.py` fetched the live CAMS + weather-forecast feature matrix ONCE at 2026-10-11T01:10:07Z (06:10:07 local); stage 1 and the stage-2 TabPFN predict() both read that same in-memory table (code: `live_features()` called once, `m.predict(live[feats])`); no refetch. LIMITATION: the full 26-feature matrix was never written to disk, so there is no matrix file/sha256. Anchor instead: committed stage-1 JSON `results/forecast_2026-10-11.json` @ `69c7d9e`, blob sha256 `85a2e07470e249b2215d0b3cf2a19f079ba0f79603982dd483126c5712ecd03d` (holds fetch time, B0/B2 hourly, and cams_pm2_5 / temperature / BLH inputs). Future runs should persist the matrix and hash it.
 - Stage-2 card/commit wording is fixed: "Late entry: TabPFN committed at <time>. Hours before that time had already occurred and are NOT pre-registered. B0 and B2 were committed at 06:10:46." Stamped by `scripts/finalize_late_entry.py` (the running stage-2 process predates this wording). Commit message: "forecast: TabPFN late entry (stage 2) for 2026-10-11".
 - 2026-10-10 GREEN LIGHT decisions (user):
