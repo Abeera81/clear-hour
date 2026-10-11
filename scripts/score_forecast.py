@@ -101,6 +101,12 @@ def score(day: str, from_hour: int | None) -> str:
     y = measured(day)
     idx = pd.date_range(day, periods=24, freq="h")
     n = int(y.reindex(idx).notna().sum())
+    if n >= MIN_HOURS_PARTIAL:  # measured hourly values, consumed by scripts/build_demo.py
+        yy = y.reindex(idx)
+        (ROOT / "results" / f"actuals_{day}.json").write_text(json.dumps({
+            "day": day, "sensor_location_id": LOCATION_ID, "timezone": "Asia/Karachi", "hour_convention": "hour start, mean over the hour",
+            "source": "OpenAQ v3 /sensors/{id}/hours", "license": "CC BY 4.0", "attribution": "The Urban Unit (AirGradient sensor, uncalibrated)",
+            "n_measured": n, "hourly": [None if pd.isna(v) else round(float(v), 1) for v in yy]}, indent=1), encoding="utf-8")
     L = [f"# Score — forecast for {day}", "",
          f"Forecast file generated {fc['generated_utc']} UTC (stage: {fc['stage']}). Truth: OpenAQ sensor {LOCATION_ID} "
          f"(uncalibrated low-cost AirGradient, CC BY 4.0, The Urban Unit), hourly means, Asia/Karachi. Measured hours: **{n}/24**.", ""]

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clear Hour</title>
+<meta name="description" content="Open forecaster ranking the hours of tomorrow by air quality in Islamabad/Rawalpindi. Built with PriorLabs-TabPFN.">
+<style>
+:root{color-scheme:light;--bg:#fcfcfb;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#6b6a66;--grid:#e6e5e1;--axis:#c9c8c3;--card:#f4f4f1;--line:#dcdbd6;
+--tabpfn:#2a78d6;--hgb:#eb6834;--b2:#1baf7a;--ridge:#eda100;--b0:#7d7c76;--band:rgba(42,120,214,.14);--grey:rgba(120,118,110,.13);--hl:rgba(42,120,214,.07);--pend:#fff7e0;--pendline:#e3c25a;--link:#1c5cab}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--bg:#1a1a19;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--mut:#a3a29a;--grid:#2d2d2b;--axis:#444441;--card:#232322;--line:#3a3a37;
+--tabpfn:#3987e5;--hgb:#d95926;--b2:#199e70;--ridge:#c98500;--b0:#9a9992;--band:rgba(57,135,229,.2);--grey:rgba(160,158,150,.16);--hl:rgba(57,135,229,.1);--pend:#2c2713;--pendline:#7a6420;--link:#86b6ef}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1a1a19;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--mut:#a3a29a;--grid:#2d2d2b;--axis:#444441;--card:#232322;--line:#3a3a37;
+--tabpfn:#3987e5;--hgb:#d95926;--b2:#199e70;--ridge:#c98500;--b0:#9a9992;--band:rgba(57,135,229,.2);--grey:rgba(160,158,150,.16);--hl:rgba(57,135,229,.1);--pend:#2c2713;--pendline:#7a6420;--link:#86b6ef}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--link)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 48px}
+header{padding:28px 0 8px}
+h1{font-size:2rem;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.25rem;margin:36px 0 8px}
+h3{font-size:1rem;margin:20px 0 6px}
+.sub{color:var(--ink2);margin:0 0 10px}
+.badge{display:inline-block;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:600}
+.callout{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--tabpfn);border-radius:8px;padding:14px 16px;margin:18px 0}
+.callout p{margin:0 0 8px}.callout p:last-child{margin:0}
+.claim{font-size:1.05rem;font-weight:600}
+.note{color:var(--ink2);font-size:.92rem}
+.mut{color:var(--mut);font-size:.82rem}
+.chart{position:relative;width:100%;margin:6px 0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:4px 0 2px;font-size:.88rem;color:var(--ink2)}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:3px solid var(--ink)}
+.sw.tabpfn{border-color:var(--tabpfn)}.sw.hgb{border-color:var(--hgb)}.sw.b2{border-color:var(--b2)}.sw.ridge{border-color:var(--ridge)}.sw.ink{border-color:var(--ink)}
+.sw.b0{border-top:3px dashed var(--b0)}
+.axcap{color:var(--mut);font-size:.78rem;margin:2px 0 0}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--axis);border-radius:6px;padding:6px 9px;font-size:.82rem;line-height:1.35;box-shadow:0 2px 8px rgba(0,0,0,.18);z-index:3;display:none;max-width:230px}
+.tip b{display:block;margin-bottom:2px}
+.tip i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:5px 9px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+th{font-weight:600;color:var(--ink2)}
+details{margin:6px 0}summary{cursor:pointer;color:var(--link);font-size:.9rem}
+.pending{background:var(--pend);border:1px dashed var(--pendline);border-radius:8px;padding:12px 16px;margin:12px 0}
+.pending p{margin:6px 0 0;color:var(--ink2);font-size:.92rem}
+.tag{display:inline-block;font-size:.72rem;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink2)}
+.tag.ok{border-color:var(--b2)}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:16px;font-size:.85rem;color:var(--ink2)}
+footer p{margin:6px 0}
+code{background:var(--card);padding:1px 5px;border-radius:4px;font-size:.88em}
+svg text{font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Clear Hour</h1>
+<p class="sub">An open forecaster that ranks the hours of tomorrow by how breathable the air is in Islamabad / Rawalpindi.</p>
+<span class="badge">Built with PriorLabs-TabPFN</span>
+</header>
+
+<div class="callout" id="headline">
+<p><strong>TabPFN v2 needs roughly 1,000–2,500 training hours (about 6–15 weeks of hourly data) before it matches, and then edges, a one-line hour-of-day bias baseline on hour ranking. Below that it is worse and high-variance.</strong></p>
+<p class="note">Mean gap in median within-day ranking ρ, TabPFN − B2: −0.12 at 100 h, −0.05 at 250 h, −0.12 at 500 h, +0.01 at 1,000 h, +0.07 at 2,500 h, +0.11 at 5,000 h. The edge is consistent across folds only at 5,000 h (4/4 folds; 3/5 at 1,000 and 2,500 h). Six rolling-origin folds, not the spent TEST month.</p>
+</div>
+
+<h2>Tomorrow's pre-registered forecast: 2026-10-11</h2>
+<p class="claim">Clear Hour predicts the cleanest 2h window of 2026-10-11 is 15:00-17:00 at 49.2 ug/m3; the dirtiest is 22:00-00:00 at 78.4 ug/m3.</p>
+<p class="note"><strong>Late entry:</strong> the B0 and B2 curves were committed at 06:10:46 (<a href="https://github.com/Abeera81/field-window/commit/69c7d9e">69c7d9e</a>). TabPFN was committed at 06:51 (<a href="https://github.com/Abeera81/field-window/commit/802344a">802344a</a>); hours before that time (shaded, up to 07:00) had already occurred and are <em>not</em> pre-registered. Inputs are live forecasts; ground truth is an uncalibrated low-cost sensor.</p>
+<div class="legend" id="lg-forecast"><span class="lg"><i class="sw tabpfn"></i>TabPFN v2 (late entry)</span><span class="lg"><i class="sw b2"></i>B2 hour-bias</span><span class="lg"><i class="sw b0"></i>B0 raw CAMS</span><span class='lg'><i class='sw ink'></i>Measured: pending</span></div>
+<div class="chart" id="c-forecast" role="img" aria-label="Predicted PM2.5 by hour for three models, with cleanest and dirtiest two-hour windows"></div>
+<p class="note">Lanes under the axis: solid bar = each model's cleanest 2 h window, outlined bar = its dirtiest. Shaded region = hours before the TabPFN commit.</p>
+<div class='tw'><table class=''><thead><tr><th scope='col'>Model</th><th scope='col'>Cleanest 2 h (µg/m³)</th><th scope='col'>Dirtiest 2 h (µg/m³)</th></tr></thead><tbody><tr><td>TabPFN v2 <span class='tag'>late entry</span></td><td>15:00–17:00 (49.2)</td><td>22:00–00:00 (78.4)</td></tr><tr><td>B2 hour-bias <span class='tag ok'>pre-registered</span></td><td>15:00–17:00 (54.0)</td><td>22:00–00:00 (81.8)</td></tr><tr><td>B0 raw CAMS <span class='tag ok'>pre-registered</span></td><td>05:00–07:00 (34.9)</td><td>22:00–00:00 (67.3)</td></tr></tbody></table></div>
+<div class='pending' role='status'><strong>Measured (sensor 4554236): Pending - scored after midnight.</strong><p>The measured series and the score table appear here only after <code>scripts/score_forecast.py</code> has been run on the finished day. Nothing on this page is a guess.</p></div>
+<details><summary>Table view: predicted hourly PM2.5 (µg/m³)</summary><div class='tw'><table class=''><thead><tr><th scope='col'>Hour</th><th scope='col'>TabPFN v2</th><th scope='col'>B2</th><th scope='col'>B0</th></tr></thead><tbody><tr><td>00:00</td><td>63.4</td><td>58.5</td><td>41.9</td></tr><tr><td>01:00</td><td>64.3</td><td>60.9</td><td>41.1</td></tr><tr><td>02:00</td><td>57.6</td><td>58.6</td><td>39.2</td></tr><tr><td>03:00</td><td>55.7</td><td>56.7</td><td>37.1</td></tr><tr><td>04:00</td><td>53.3</td><td>56.9</td><td>35.4</td></tr><tr><td>05:00</td><td>51.3</td><td>56.8</td><td>34.8</td></tr><tr><td>06:00</td><td>51.4</td><td>60.0</td><td>35.0</td></tr><tr><td>07:00</td><td>53.3</td><td>65.2</td><td>37.7</td></tr><tr><td>08:00</td><td>55.3</td><td>66.5</td><td>37.3</td></tr><tr><td>09:00</td><td>57.4</td><td>65.3</td><td>34.9</td></tr><tr><td>10:00</td><td>57.2</td><td>67.1</td><td>35.5</td></tr><tr><td>11:00</td><td>56.2</td><td>69.5</td><td>35.3</td></tr><tr><td>12:00</td><td>55.2</td><td>65.8</td><td>35.3</td></tr><tr><td>13:00</td><td>56.9</td><td>61.5</td><td>36.6</td></tr><tr><td>14:00</td><td>52.5</td><td>57.8</td><td>37.6</td></tr><tr><td>15:00</td><td>49.6</td><td>53.1</td><td>36.4</td></tr><tr><td>16:00</td><td>48.8</td><td>54.9</td><td>38.1</td></tr><tr><td>17:00</td><td>59.4</td><td>59.0</td><td>40.9</td></tr><tr><td>18:00</td><td>65.1</td><td>67.0</td><td>45.6</td></tr><tr><td>19:00</td><td>69.9</td><td>70.9</td><td>48.9</td></tr><tr><td>20:00</td><td>73.5</td><td>71.5</td><td>50.2</td></tr><tr><td>21:00</td><td>74.9</td><td>73.7</td><td>55.3</td></tr><tr><td>22:00</td><td>78.8</td><td>78.8</td><td>63.8</td></tr><tr><td>23:00</td><td>78.1</td><td>84.8</td><td>70.8</td></tr></tbody></table></div></details>
+
+<h2>Data efficiency: how many hours before a new sensor is usable?</h2>
+<p class="note">Rolling-origin test: for each of six 30-day windows, train on the N most recent valid hours before the window (recency, never random). Mean over the folds available at each N (4–6); TabPFN's whiskers are ±1 std across folds (large: fold spread is as big as most gaps between models). The shaded column marks 1,000–2,500 h.</p>
+<div class="legend"><span class="lg"><i class="sw tabpfn"></i>TabPFN v2</span><span class="lg"><i class="sw hgb"></i>HistGBR</span><span class="lg"><i class="sw b2"></i>B2 hour-bias</span><span class="lg"><i class="sw ridge"></i>Ridge</span><span class="lg"><i class="sw b0"></i>B0 raw CAMS</span></div>
+<h3>Hour ranking (the product metric)</h3>
+<div class="chart" id="c-rho" role="img" aria-label="Median within-day Spearman correlation versus training hours for five models"></div>
+<h3>Level error</h3>
+<div class="chart" id="c-mae" role="img" aria-label="Mean absolute error versus training hours for four models"></div>
+<p class="note">Ridge is omitted from the error chart: it is off-scale at small N (MAE 321 at 100 h, 74 at 250 h, 52 at 500 h). N = 10,000 is not shown: TabPFN was not run there (one fold, baselines only). The F3 smog-season fold dominates every mean; differences under ~1–2 µg/m³ or ~0.05 in ρ are ties.</p>
+<details><summary>Table view: learning curve</summary><div class='tw'><table class=''><thead><tr><th scope='col'>Model (mean over folds)</th><th scope='col'>N=100</th><th scope='col'>N=250</th><th scope='col'>N=500</th><th scope='col'>N=1,000</th><th scope='col'>N=2,500</th><th scope='col'>N=5,000</th></tr></thead><tbody><tr><td>TabPFN v2</td><td>0.317<br><span class='mut'>MAE 19.7</span></td><td>0.447<br><span class='mut'>MAE 18.4</span></td><td>0.431<br><span class='mut'>MAE 17.9</span></td><td>0.544<br><span class='mut'>MAE 17.2</span></td><td>0.616<br><span class='mut'>MAE 16.0</span></td><td>0.590<br><span class='mut'>MAE 16.9</span></td></tr><tr><td>HistGBR</td><td>0.350<br><span class='mut'>MAE 18.3</span></td><td>0.402<br><span class='mut'>MAE 18.8</span></td><td>0.442<br><span class='mut'>MAE 17.5</span></td><td>0.441<br><span class='mut'>MAE 17.2</span></td><td>0.457<br><span class='mut'>MAE 16.8</span></td><td>0.541<br><span class='mut'>MAE 31.9</span></td></tr><tr><td>B2 hour-bias</td><td>0.439<br><span class='mut'>MAE 19.2</span></td><td>0.498<br><span class='mut'>MAE 18.1</span></td><td>0.555<br><span class='mut'>MAE 21.3</span></td><td>0.535<br><span class='mut'>MAE 24.1</span></td><td>0.543<br><span class='mut'>MAE 30.2</span></td><td>0.476<br><span class='mut'>MAE 44.5</span></td></tr><tr><td>Ridge</td><td>0.309<br><span class='mut'>MAE 320.9</span></td><td>0.470<br><span class='mut'>MAE 74.1</span></td><td>0.529<br><span class='mut'>MAE 52.5</span></td><td>0.469<br><span class='mut'>MAE 50.5</span></td><td>0.453<br><span class='mut'>MAE 19.1</span></td><td>0.547<br><span class='mut'>MAE 22.4</span></td></tr><tr><td>B0 raw CAMS</td><td>0.439<br><span class='mut'>MAE 24.9</span></td><td>0.439<br><span class='mut'>MAE 24.9</span></td><td>0.479<br><span class='mut'>MAE 27.2</span></td><td>0.479<br><span class='mut'>MAE 27.2</span></td><td>0.479<br><span class='mut'>MAE 27.2</span></td><td>0.431<br><span class='mut'>MAE 30.1</span></td></tr><tr><td>TabPFN − B2 (ρ)</td><td>-0.123</td><td>-0.051</td><td>-0.124</td><td>+0.010</td><td>+0.073</td><td>+0.114</td></tr></tbody></table></div></details>
+
+<h2>Cross-sensor transfer</h2>
+<p class="note">Trained on sensor 4554236 (2,500 most recent hours, no retraining), evaluated at sensor 4565419 over folds F2, F3, F4, F6. Both sensors share the same CAMS/weather inputs; F1 and F5 have no transfer cell.</p>
+<div class='tw'><table class=''><thead><tr><th scope='col'>Model</th><th scope='col'>MAE</th><th scope='col'>median ρ</th><th scope='col'>top-window hit</th><th scope='col'>folds</th></tr></thead><tbody><tr><td>B0 raw CAMS</td><td>27.5</td><td>0.570</td><td>43%</td><td>4</td></tr><tr><td>B2 CAMS+hour bias</td><td>32.5</td><td>0.604</td><td>47%</td><td>4</td></tr><tr><td>B4 Ridge</td><td>18.2</td><td>0.568</td><td>47%</td><td>4</td></tr><tr><td>B5 HistGBR</td><td>17.5</td><td>0.521</td><td>43%</td><td>4</td></tr><tr><td>M1 TabPFN v2</td><td>16.8</td><td>0.661</td><td>56%</td><td>4</td></tr></tbody></table></div>
+
+<h2>Held-out TEST month (evaluated once)</h2>
+<p class="note">2026-09-10 → 2026-10-09, 30 days, models refit on TRAIN+DEV. TabPFN's MAE edge over B2 is clear; its ranking edge over B2 is <strong>not</strong> statistically significant, and HistGBR beat TabPFN on the DEV month.</p>
+<div class='tw'><table class=''><thead><tr><th scope='col'>Model</th><th scope='col'>MAE</th><th scope='col'>RMSE</th><th scope='col'>Bias</th><th scope='col'>Within-day ρ median</th><th scope='col'>Top-2h hit</th></tr></thead><tbody><tr><td>B0 raw CAMS</td><td>16.1</td><td>20.7</td><td>-3.4</td><td>0.564</td><td>30%</td></tr><tr><td>B1 CAMS+const bias</td><td>22.0</td><td>28.7</td><td>+20.2</td><td>0.564</td><td>30%</td></tr><tr><td>B2 CAMS+hour bias</td><td>22.1</td><td>28.7</td><td>+20.2</td><td>0.544</td><td>43%</td></tr><tr><td>B3 CAMS+hour×season bias</td><td>31.6</td><td>41.1</td><td>+27.3</td><td>0.489</td><td>40%</td></tr><tr><td>B4 Ridge</td><td>20.3</td><td>27.4</td><td>+17.4</td><td>0.603</td><td>30%</td></tr><tr><td>B5 HistGBR</td><td>10.8</td><td>15.2</td><td>-4.1</td><td>0.644</td><td>40%</td></tr><tr><td>M1 TabPFN v2</td><td>10.3</td><td>14.6</td><td>-4.2</td><td>0.675</td><td>37%</td></tr></tbody></table></div>
+
+<footer>
+<p><strong>Built with PriorLabs-TabPFN</strong> (TabPFN v2, Prior Labs License 1.1 — <a href="https://github.com/Abeera81/field-window/blob/main/docs/licenses/PriorLabs-TabPFN-v2-LICENSE.txt">licence copy</a>). Tinker was not used.</p>
+<p>Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0). Air-quality model data: Copernicus Atmosphere Monitoring Service (CAMS) via Open-Meteo (see <a href="https://github.com/Abeera81/field-window/blob/main/docs/attribution.md">attribution</a> for the full CAMS credit). Values were modified by our models.</p>
+<p>Air-quality measurements: AirGradient sensors operated via The Urban Unit, CC BY 4.0, from <a href="https://openaq.org/">OpenAQ</a>; uncalibrated, not endorsed by The Urban Unit.</p>
+<p><strong>Limitations.</strong> The ground truth is an uncalibrated low-cost sensor, and the evaluation used archived CAMS/weather inputs that are better than live forecasts. One forecast day is an anecdote, and rain or a change in wind can invalidate it.</p>
+<p><a href="https://github.com/Abeera81/field-window">Source and full results</a>.</p>
+</footer>
+</div>
+<script id="data" type="application/json">{"forecast": {"xs": [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5, 21.5, 22.5, 23.5], "xdomain": [0, 24], "ydomain": [0, 100], "yticks": [0, 25, 50, 75, 100], "yunit": "µg/m³", "xticks": [[0, "00"], [3, "03"], [6, "06"], [9, "09"], [12, "12"], [15, "15"], [18, "18"], [21, "21"], [24, "24"]], "series": [{"name": "TabPFN v2 (late entry)", "key": "tabpfn", "values": [63.4, 64.3, 57.6, 55.7, 53.3, 51.3, 51.4, 53.3, 55.3, 57.4, 57.2, 56.2, 55.2, 56.9, 52.5, 49.6, 48.8, 59.4, 65.1, 69.9, 73.5, 74.9, 78.8, 78.1], "w": 2.5}, {"name": "B2 hour-bias (pre-registered)", "key": "b2", "values": [58.5, 60.9, 58.6, 56.7, 56.9, 56.8, 60.0, 65.2, 66.5, 65.3, 67.1, 69.5, 65.8, 61.5, 57.8, 53.1, 54.9, 59.0, 67.0, 70.9, 71.5, 73.7, 78.8, 84.8], "w": 2}, {"name": "B0 raw CAMS (pre-registered)", "key": "b0", "values": [41.9, 41.1, 39.2, 37.1, 35.4, 34.8, 35.0, 37.7, 37.3, 34.9, 35.5, 35.3, 35.3, 36.6, 37.6, 36.4, 38.1, 40.9, 45.6, 48.9, 50.2, 55.3, 63.8, 70.8], "w": 2, "dash": "5 4"}], "lanes": [{"label": "TabPFN", "key": "tabpfn", "clean": [15, 17], "dirty": [22, 24], "cleanTxt": "15-17", "dirtyTxt": "22-00"}, {"label": "B2", "key": "b2", "clean": [15, 17], "dirty": [22, 24], "cleanTxt": "15-17", "dirtyTxt": "22-00"}, {"label": "B0", "key": "b0", "clean": [5, 7], "dirty": [22, 24], "cleanTxt": "05-07", "dirtyTxt": "22-00"}], "tipx": ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"], "vlines": [{"x": 7, "label": "07:00"}], "bands": [{"x0": 0, "x1": 7, "key": "grey"}], "xlabel": "hour of day (Asia/Karachi), predicted PM2.5 at hour start"}, "rho": {"xs": [0, 1, 2, 3, 4, 5], "xdomain": [-0.3, 5.3], "ydomain": [0.2, 0.8], "yticks": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], "fmt": "0.00", "yunit": "", "xticks": [[0, "100", "6 folds"], [1, "250", "6 folds"], [2, "500", "5 folds"], [3, "1,000", "5 folds"], [4, "2,500", "5 folds"], [5, "5,000", "4 folds"]], "series": [{"name": "TabPFN v2", "key": "tabpfn", "values": [0.3167439846163009, 0.4472339125546654, 0.43080192595053457, 0.5442950494096154, 0.6160549278699662, 0.5903126329181823], "w": 2.5, "markers": true, "whisk": true, "std": [0.33579267353704845, 0.21721657241352738, 0.24482154972467304, 0.1222417663509065, 0.07543504683821513, 0.11197242631638529]}, {"name": "HistGBR", "key": "hgb", "values": [0.3497270988286592, 0.4021977549074392, 0.44209907217474864, 0.44115659999411205, 0.4569977306143082, 0.5414070477644117], "w": 2, "markers": true, "std": [0.2245673997104398, 0.16372736670195878, 0.1393046169207209, 0.15098713773358244, 0.15297114223688763, 0.13630266696212057]}, {"name": "B2 hour-bias", "key": "b2", "values": [0.4393740797162928, 0.4977585691956515, 0.5548807229095221, 0.5346165380533657, 0.5431713013061789, 0.47608899593933696], "w": 2, "markers": true, "std": [0.1423543594399883, 0.14159992939965438, 0.08618930473980084, 0.0682557058408651, 0.11198357525316141, 0.12510742287432886]}, {"name": "Ridge", "key": "ridge", "values": [0.3086195499750488, 0.47039163539886814, 0.5286661358602524, 0.4694603409102761, 0.45287418286601583, 0.5468953922243673], "w": 2, "markers": true, "std": [0.229147550619542, 0.16736676544462342, 0.1270662431244956, 0.1873077723879015, 0.16906388073551257, 0.16489674605285728]}, {"name": "B0 raw CAMS", "key": "b0", "values": [0.43911115429282715, 0.43911115429282715, 0.47927228250689263, 0.47927228250689263, 0.47927228250689263, 0.43066576032850634], "w": 2, "markers": false, "dash": "5 4", "std": [0.20764588760855446, 0.20764588760855446, 0.20444839606910833, 0.20444839606910833, 0.20444839606910833, 0.19995391690367456]}], "tipx": ["N = 100 training hours", "N = 250 training hours", "N = 500 training hours", "N = 1,000 training hours", "N = 2,500 training hours", "N = 5,000 training hours"], "xlabel": "training hours N (the N most recent valid hourly rows before each 30-day test window)", "ylabel": "median within-day Spearman ρ (higher is better)", "bands": [{"x0": 3, "x1": 4, "key": "hl"}], "vlines": []}, "mae": {"xs": [0, 1, 2, 3, 4, 5], "xdomain": [-0.3, 5.3], "ydomain": [0, 50], "yticks": [0, 10, 20, 30, 40, 50], "fmt": "0.0", "yunit": "", "xticks": [[0, "100", "6 folds"], [1, "250", "6 folds"], [2, "500", "5 folds"], [3, "1,000", "5 folds"], [4, "2,500", "5 folds"], [5, "5,000", "4 folds"]], "series": [{"name": "TabPFN v2", "key": "tabpfn", "values": [19.72049034094769, 18.36664638870911, 17.855815328975716, 17.188681236141445, 15.95578647106565, 16.942706378041937], "w": 2.5, "markers": true, "whisk": true, "std": [17.013981637787776, 18.28282528837452, 14.976585325546312, 14.714458294946683, 13.821130816865383, 15.362728211442121]}, {"name": "HistGBR", "key": "hgb", "values": [18.284134029940844, 18.841084090016093, 17.508497054990183, 17.23299580173262, 16.80723270824744, 31.936686687153514], "w": 2, "markers": true, "std": [14.707468282979745, 18.642671927768127, 15.502117383156822, 14.482030879838005, 13.768298112601887, 27.71857160894003]}, {"name": "B2 hour-bias", "key": "b2", "values": [19.177649087421823, 18.133150372256896, 21.326468175805893, 24.149339958136597, 30.15505682703166, 44.45651792485083], "w": 2, "markers": true, "std": [12.37936801198834, 13.760700631323553, 18.041188948106914, 18.156816052768125, 21.973666728115283, 14.422798207420943]}, {"name": "B0 raw CAMS", "key": "b0", "values": [24.935690478575605, 24.935690478575605, 27.238504651556696, 27.238504651556696, 27.238504651556696, 30.125469070423364], "w": 2, "markers": false, "dash": "5 4", "std": [28.55441486519782, 28.55441486519782, 31.295704369811975, 31.295704369811975, 31.295704369811975, 35.360020630153436]}], "tipx": ["N = 100 training hours", "N = 250 training hours", "N = 500 training hours", "N = 1,000 training hours", "N = 2,500 training hours", "N = 5,000 training hours"], "xlabel": "training hours N (the N most recent valid hourly rows before each 30-day test window)", "ylabel": "MAE µg/m³ (lower is better)", "bands": [{"x0": 3, "x1": 4, "key": "hl"}], "vlines": []}}</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('data').textContent);
+var NS='http://www.w3.org/2000/svg';
+function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function col(k){return 'var(--'+k+')'}
+function fmtv(v,f){if(v==null)return '—';return f==='0.00'?v.toFixed(2):v.toFixed(1)}
+function draw(id,cfg){
+  var host=document.getElementById(id);host.innerHTML='';
+  var W=Math.max(host.clientWidth,260),narrow=W<520;
+  var lanes=cfg.lanes||[];
+  var ml=narrow?40:48,mr=narrow?10:14,mt=10,mb=cfg.xticks&&cfg.xticks[0].length>2?38:24;
+  var ph=narrow?230:290,laneH=lanes.length?lanes.length*20+14:0;
+  var H=mt+ph+mb+laneH+(cfg.ylabel?0:0);
+  var svg=el('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'presentation'});
+  host.appendChild(svg);
+  var pw=W-ml-mr;
+  var x0=cfg.xdomain[0],x1=cfg.xdomain[1];
+  function X(v){return ml+(v-x0)/(x1-x0)*pw}
+  var y0=cfg.ydomain[0],y1=cfg.ydomain[1];
+  function Y(v){return mt+ph-(v-y0)/(y1-y0)*ph}
+  var f=cfg.fmt||'0.0';
+  (cfg.bands||[]).forEach(function(b){el('rect',{x:X(b.x0),y:mt,width:Math.max(X(b.x1)-X(b.x0),0),height:ph,style:'fill:'+col(b.key)},svg)});
+  cfg.yticks.forEach(function(t){
+    el('line',{x1:ml,x2:ml+pw,y1:Y(t),y2:Y(t),style:'stroke:'+col('grid')+';stroke-width:1'},svg);
+    var tx=el('text',{x:ml-6,y:Y(t)+4,'text-anchor':'end',style:'fill:'+col('mut')+';font-size:11px'},svg);tx.textContent=(f==='0.00'?t.toFixed(1):t);
+  });
+  el('line',{x1:ml,x2:ml+pw,y1:mt+ph,y2:mt+ph,style:'stroke:'+col('axis')},svg);
+  cfg.xticks.forEach(function(t){
+    var tx=el('text',{x:X(t[0]),y:mt+ph+16,'text-anchor':'middle',style:'fill:'+col('mut')+';font-size:11px'},svg);tx.textContent=t[1];
+    if(t[2]){var t2=el('text',{x:X(t[0]),y:mt+ph+30,'text-anchor':'middle',style:'fill:'+col('mut')+';font-size:10px'},svg);t2.textContent=t[2]}
+  });
+  var cap=document.createElement('div');cap.className='axcap';
+  cap.textContent=(cfg.ylabel?'y: '+cfg.ylabel+(cfg.yunit?' ('+cfg.yunit+')':'')+'  ·  ':(cfg.yunit?'y: '+cfg.yunit+'  ·  ':''))+'x: '+cfg.xlabel;
+  (cfg.vlines||[]).forEach(function(v){
+    el('line',{x1:X(v.x),x2:X(v.x),y1:mt,y2:mt+ph,style:'stroke:'+col('ink2')+';stroke-width:1.5;stroke-dasharray:3 3'},svg);
+    var tx=el('text',{x:X(v.x)+4,y:mt+12,style:'fill:'+col('ink2')+';font-size:11px'},svg);tx.textContent=v.label;
+  });
+  cfg.series.forEach(function(s){
+    var c=col(s.key==='ink'?'ink':s.key);
+    if(s.whisk&&s.std){cfg.xs.forEach(function(x,i){var v=s.values[i],sd=s.std[i];if(v==null||sd==null)return;
+      var lo=Y(Math.max(v-sd,y0)),hi=Y(Math.min(v+sd,y1)),cx=X(x);
+      el('line',{x1:cx,x2:cx,y1:lo,y2:hi,style:'stroke:'+c+';stroke-width:1.5;opacity:.4'},svg);
+      el('line',{x1:cx-4,x2:cx+4,y1:lo,y2:lo,style:'stroke:'+c+';stroke-width:1.5;opacity:.4'},svg);
+      el('line',{x1:cx-4,x2:cx+4,y1:hi,y2:hi,style:'stroke:'+c+';stroke-width:1.5;opacity:.4'},svg)})}
+    var d='',pen=false;
+    cfg.xs.forEach(function(x,i){var v=s.values[i];if(v==null){pen=false;return}d+=(pen?'L':'M')+X(x)+','+Y(Math.min(Math.max(v,y0),y1));pen=true});
+    el('path',{d:d,fill:'none',style:'stroke:'+c+';stroke-width:'+(s.w||2)+(s.dash?';stroke-dasharray:'+s.dash:'')+';stroke-linejoin:round;stroke-linecap:round'},svg);
+    if(s.markers)cfg.xs.forEach(function(x,i){var v=s.values[i];if(v!=null)el('circle',{cx:X(x),cy:Y(Math.min(Math.max(v,y0),y1)),r:4,style:'fill:'+c+';stroke:'+col('surface')+';stroke-width:2'},svg)});
+  });
+  // direct labels at right end (wide screens only), de-collided
+  if(!narrow&&cfg.fmt){
+    var ends=[];cfg.series.forEach(function(s){for(var i=s.values.length-1;i>=0;i--){if(s.values[i]!=null){ends.push({s:s,y:Y(s.values[i]),i:i});break}}});
+    ends.sort(function(a,b){return a.y-b.y});for(var k=1;k<ends.length;k++){if(ends[k].y-ends[k-1].y<13)ends[k].y=ends[k-1].y+13}
+    ends.forEach(function(e){var tx=el('text',{x:Math.min(X(cfg.xs[e.i])+8,W-4),y:e.y+4,'text-anchor':'start',style:'fill:'+col('ink2')+';font-size:11px'},svg);tx.textContent=e.s.name;})
+  }
+  // lanes: cleanest (solid) and dirtiest (outlined) windows per model
+  if(lanes.length){
+    var ly=mt+ph+mb;
+    lanes.forEach(function(L,i){
+      var yy=ly+i*20;
+      var lt=el('text',{x:ml-6,y:yy+12,'text-anchor':'end',style:'fill:'+col('ink2')+';font-size:11px'},svg);lt.textContent=L.label;
+      el('rect',{x:X(0),y:yy,width:pw,height:16,rx:3,style:'fill:'+col('grid')+';opacity:.5'},svg);
+      var cb=el('rect',{x:X(L.clean[0]),y:yy,width:X(L.clean[1])-X(L.clean[0]),height:16,rx:3,style:'fill:'+col(L.key)},svg);
+      el('rect',{x:X(L.dirty[0])+1,y:yy+1,width:X(L.dirty[1])-X(L.dirty[0])-2,height:14,rx:3,style:'fill:none;stroke:'+col(L.key)+';stroke-width:2;stroke-dasharray:3 2'},svg);
+      if(X(L.clean[1])-X(L.clean[0])>=36){var t1=el('text',{x:X(L.clean[0])+4,y:yy+12,style:'fill:#fff;font-size:10.5px;font-weight:600'},svg);t1.textContent=L.cleanTxt}
+      if(X(L.dirty[1])-X(L.dirty[0])>=36){var t2=el('text',{x:X(L.dirty[0])+5,y:yy+12,style:'fill:'+col('ink2')+';font-size:10.5px'},svg);t2.textContent=L.dirtyTxt}
+    });
+    // faint in-plot echo of each cleanest window
+    lanes.forEach(function(L){el('rect',{x:X(L.clean[0]),y:mt,width:X(L.clean[1])-X(L.clean[0]),height:ph,style:'fill:'+col(L.key)+';opacity:.07'},svg)});
+  }
+  host.appendChild(cap);
+  // hover layer: crosshair + tooltip
+  var cross=el('line',{y1:mt,y2:mt+ph,style:'stroke:'+col('ink2')+';stroke-width:1;display:none'},svg);
+  var tip=document.createElement('div');tip.className='tip';host.appendChild(tip);
+  var hit=el('rect',{x:ml,y:mt,width:pw,height:ph,fill:'transparent',style:'cursor:crosshair'},svg);
+  function move(ev){
+    var r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)*(W/r.width);
+    var best=0,bd=1e9;cfg.xs.forEach(function(x,i){var d=Math.abs(X(x)-px);if(d<bd){bd=d;best=i}});
+    var cx=X(cfg.xs[best]);cross.setAttribute('x1',cx);cross.setAttribute('x2',cx);cross.style.display='';
+    var h='<b>'+cfg.tipx[best]+'</b>';
+    cfg.series.forEach(function(s){var v=s.values[best];if(v==null)return;
+      var sd=s.std&&s.std[best]!=null?' ± '+fmtv(s.std[best],f):'';
+      h+='<div><i style="background:'+col(s.key==='ink'?'ink':s.key)+'"></i>'+s.name+': '+fmtv(v,f)+sd+'</div>'});
+    tip.innerHTML=h;tip.style.display='block';
+    var left=cx*(r.width/W)+12;if(left+230>r.width)left=cx*(r.width/W)-tip.offsetWidth-12;
+    tip.style.left=Math.max(left,0)+'px';tip.style.top='8px';
+  }
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);
+  hit.addEventListener('pointerleave',function(){cross.style.display='none';tip.style.display='none'});
+}
+function all(){draw('c-forecast',D.forecast);draw('c-rho',D.rho);draw('c-mae',D.mae)}
+all();
+var t;window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(all,120)});
+})();
+</script>
+</body>
+</html>

@@ -9,3 +9,6 @@
 - Data: iNaturalist API v1 (per-record CC licenses; <=1 req/s)
 - Weather: Open-Meteo archive API — data CC BY 4.0, attribution required: "Weather data by Open-Meteo.com (CC BY 4.0)"
 - Optional: Tiger Data, Sentry. No other sponsor tools.
+
+- TabPFN v2 weights licence: Prior Labs License 1.1 (Apache-2.0 + attribution paragraph 10) - display "Built with PriorLabs-TabPFN" on README, demo page, posts; see docs/attribution.md. Package code is Apache-2.0.
+- Open-Meteo CAMS data: CC BY 4.0, credit CAMS + Open-Meteo (docs/attribution.md). OpenAQ sensors: CC BY 4.0, "The Urban Unit".
