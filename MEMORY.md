@@ -16,6 +16,7 @@ Python (uv venv, 3.12), CPU torch, tinker, tabpfn, pandas, scikit-learn, request
 - Dataset (`src/dataset.py` → data/processed/hourly.parquet, 11,669 rows, 26 features): tested (built 2026-10-10)
 - Evaluation (`eval/evaluate.py dev|test|report` → results/evaluation.md): tested. DEV run then TEST run ONCE (2026-10-11 ~01:08 PKT); results/eval_test.json exists, so the held-out TEST set is spent
 - Forecast 2026-10-11: stage 1 (B0 raw CAMS + B2 hour-bias) committed `69c7d9e` at 2026-10-11T06:10:46+05:00 = the pre-registration. Stage 2 (TabPFN v2) = LATE ENTRY, fit running since 06:10 (~85 min CPU), committed when done; hours before its commit are NOT pre-registered. Stage 2 TabPFN late entry fit finished 2026-10-11 06:51 local (2,421 s fit+predict); B0/B2 verified identical to stage 1 before commit. Status: implemented (both stages pushed; not yet scored)
+- Learning curve (`eval/learning_curve.py run|report` → results/learning_curve.{md,json,_cells.json}): tested 2026-10-11 (protocol committed `7438bbc` before any fit; 6 rolling-origin folds, N=100..5000 complete on eligible folds, N=10000 TabPFN not run, cross-sensor transfer on F2/F3/F4/F6). Headline: TabPFN v2 does NOT beat HistGBR/B2 at N<=500; consistent advantage (mostly on within-day ranking) from N~1000-2500; MAE margin over HistGBR <1 ug/m3 there. Status: tested
 - Scoring (`scripts/score_forecast.py DATE [--from-hour HH]`): implemented; logic self-tested on synthetic data only, NOT yet run on real data (run after the day ends)
 
 ## Capability grid
