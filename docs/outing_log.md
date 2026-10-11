@@ -25,3 +25,14 @@ Entries are subjective observations, not measurements; they are context for the 
 - **Eye / throat symptoms (none / mild / moderate, and when):** none noted
 - **Photo filename (kept outside git unless cleared for publication):** none this walk
 - **Free text:** walked around 5:20pm, air felt relatively clear, hills kinda visible.
+
+## Entry
+
+- **Date:** 2026-10-11
+- **Time (start–end, Asia/Karachi):** ~20:33
+- **General area:** no walk (observed from indoors/nearby)
+- **Haze (0 = clear, 1 = slight, 2 = noticeable, 3 = heavy):** sky described as clear
+- **Margalla visibility (e.g. ridge crisp / faint / not visible):** not checked (dark)
+- **Eye / throat symptoms (none / mild / moderate, and when):** none noted
+- **Photo filename (kept outside git unless cleared for publication):** none this walk
+- **Free text:** 20:33, sky looks clear, no visible haze despite dark.
