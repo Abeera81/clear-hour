@@ -1,0 +1,189 @@
+{
+ "day": "2026-10-11",
+ "stage": "stage1 (B0 + B2 only; TabPFN fit in progress)",
+ "generated_utc": "2026-10-11T01:10:39+00:00",
+ "input_meta": {
+  "cams_span": [
+   "2026-10-08 00:00:00",
+   "2026-10-14 23:00:00"
+  ],
+  "wx_span": [
+   "2026-10-08 00:00:00",
+   "2026-10-14 23:00:00"
+  ],
+  "fetched_utc": "2026-10-11T01:10:07+00:00"
+ },
+ "train_rows": 11693,
+ "train_last_hour": "2026-10-10 22:00:00",
+ "models": {
+  "B0 raw CAMS": {
+   "hourly": [
+    41.9,
+    41.1,
+    39.2,
+    37.1,
+    35.4,
+    34.8,
+    35.0,
+    37.7,
+    37.3,
+    34.9,
+    35.5,
+    35.3,
+    35.3,
+    36.6,
+    37.6,
+    36.4,
+    38.1,
+    40.9,
+    45.6,
+    48.9,
+    50.2,
+    55.3,
+    63.8,
+    70.8
+   ],
+   "windows": {
+    "cleanest": {
+     "start": "05:00",
+     "end": "07:00",
+     "pm25": 34.9
+    },
+    "dirtiest": {
+     "start": "22:00",
+     "end": "00:00",
+     "pm25": 67.3
+    }
+   }
+  },
+  "B2 CAMS+hour bias": {
+   "hourly": [
+    58.5,
+    60.9,
+    58.6,
+    56.7,
+    56.9,
+    56.8,
+    60.0,
+    65.2,
+    66.5,
+    65.3,
+    67.1,
+    69.5,
+    65.8,
+    61.5,
+    57.8,
+    53.1,
+    54.9,
+    59.0,
+    67.0,
+    70.9,
+    71.5,
+    73.7,
+    78.8,
+    84.8
+   ],
+   "windows": {
+    "cleanest": {
+     "start": "15:00",
+     "end": "17:00",
+     "pm25": 54.0
+    },
+    "dirtiest": {
+     "start": "22:00",
+     "end": "00:00",
+     "pm25": 81.8
+    }
+   }
+  }
+ },
+ "caveats": [
+  "Inputs are LIVE forecasts from the Open-Meteo air-quality and weather forecast endpoints (not the archives); the evaluation used archive inputs, so live skill is expected to be worse.",
+  "Ground truth is an uncalibrated low-cost AirGradient sensor (OpenAQ 4554236; CC BY 4.0, The Urban Unit), not a reference monitor.",
+  "On the held-out TEST month the exact cleanest-window hit rate (both hours inside the actual cleanest 6) was 37% for TabPFN v2 (30% raw CAMS, 43% B2).",
+  "Feature coverage: all 26 features built from the forecast endpoints; none substituted from archives. Fill/null report: none. Forecast CAMS grid point 33.6, 73.100006.",
+  "Known differences vs training: training CAMS/weather were archive values; here CAMS comes from the forecast endpoint (`cams_pm2_5_roll24` and lags use the 3 past days + forecast of the same endpoint), weather from api.open-meteo.com/v1/forecast (`boundary_layer_height` is a model forecast; in training it was archive).",
+  "Training data: monitor hours up to 2026-10-10 22:00:00 (11693 rows); B2 bias offsets fitted on all of it; TabPFN uses the most recent 10000."
+ ],
+ "feature_nulls": {},
+ "inputs_hourly": {
+  "cams_pm2_5": [
+   41.9,
+   41.1,
+   39.2,
+   37.1,
+   35.4,
+   34.8,
+   35.0,
+   37.7,
+   37.3,
+   34.9,
+   35.5,
+   35.3,
+   35.3,
+   36.6,
+   37.6,
+   36.4,
+   38.1,
+   40.9,
+   45.6,
+   48.9,
+   50.2,
+   55.3,
+   63.8,
+   70.8
+  ],
+  "wx_temperature_2m": [
+   19.5,
+   19.4,
+   19.2,
+   18.9,
+   18.9,
+   19.1,
+   18.8,
+   19.6,
+   21.0,
+   23.1,
+   25.0,
+   26.5,
+   26.6,
+   26.7,
+   27.1,
+   27.1,
+   26.8,
+   26.0,
+   24.6,
+   23.6,
+   22.7,
+   22.2,
+   21.6,
+   21.3
+  ],
+  "wx_boundary_layer_height": [
+   140.0,
+   90.0,
+   35.0,
+   85.0,
+   75.0,
+   215.0,
+   95.0,
+   40.0,
+   95.0,
+   250.0,
+   475.0,
+   765.0,
+   525.0,
+   610.0,
+   1085.0,
+   1095.0,
+   700.0,
+   10.0,
+   15.0,
+   20.0,
+   30.0,
+   25.0,
+   40.0,
+   45.0
+  ]
+ }
+}
