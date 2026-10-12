@@ -215,7 +215,19 @@ TabPFN has the lowest MAE and RMSE, and it is clearly better than B2 on MAE (95%
 
 ## Real-world check
 
-{{PENDING: filled after scoring}}
+The 2026-10-11 forecast was scored against measured hourly PM2.5 from OpenAQ sensor 4554236 (Rawalpindi Women University, AirGradient, uncalibrated low-cost sensor, CC BY 4.0, attribution "The Urban Unit"); 24/24 hours were available. Full results: [`results/forecast_2026-10-11_score.md`](results/forecast_2026-10-11_score.md), measured values: [`results/actuals_2026-10-11.json`](results/actuals_2026-10-11.json).
+
+Actual day mean was 45.4 µg/m³; the true cleanest 2h window was 17:00 (20.9 µg/m³), the dirtiest was 00:00 (79.2 µg/m³).
+
+| Model | MAE | Bias | Spearman (24h) | Chosen cleanest 2h | Actual there | Inside true cleanest set? |
+|---|---|---|---|---|---|---|
+| B0 raw CAMS | 21.9 | −3.5 | −0.512 | 05:00-07:00 | 73.7 | no |
+| M1 TabPFN v2 | 21.9 | +14.6 | −0.369 | 15:00-17:00 | 29.8 | no |
+| B2 CAMS+hour bias | 25.3 | +18.8 | −0.409 | 15:00-17:00 | 29.8 | no |
+
+**On this one day, none of the three models ranked hours correctly** — all three had negative within-day Spearman correlation, and none of their picked "cleanest 2h" windows landed inside the actual cleanest hours (17:00-22:00). B0 had the best MAE and bias; TabPFN and B2 picked the same (wrong) window and both over-predicted PM2.5 substantially (bias +14.6 and +18.8). Restricting to only the hours that were pre-registered for TabPFN (>=07:00, its late-entry commit time) does not change the picture: B0 still did best (MAE 18.1), and TabPFN/B2 again missed the true cleanest hours.
+
+This is a single day — one sample is not evidence of a general pattern, and the held-out TEST month evaluation above (where TabPFN beat B2/raw-CAMS on MAE and matched them on ranking) remains the primary evidence for the model. But it is a useful, honest counter-example: live forecast inputs can diverge from the archive data the model was evaluated on, and a single real day can go against every model at once.
 
 ## Limitations
 
