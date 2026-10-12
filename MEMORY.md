@@ -1,7 +1,7 @@
 # MEMORY.md — field-window
 
 ## What this is
-**Clear Hour** — local, open-source forecaster ranking tomorrow's hours by how breathable the air is in Islamabad/Rawalpindi (smog season). TabPFN on years of hourly Open-Meteo air-quality + weather history. A day's forecast is committed to git BEFORE that day, then checked. Primary prize: Best Use of TabPFN; Tinker optional. Deadline 2026-10-12 06:59 UTC. Repo: https://github.com/Abeera81/field-window. Brief: `agent_docs/project_brief.md`.
+**Clear Hour** — local, open-source forecaster ranking tomorrow's hours by how breathable the air is in Islamabad/Rawalpindi (smog season). TabPFN on years of hourly Open-Meteo air-quality + weather history. A day's forecast is committed to git BEFORE that day, then checked. Primary prize: Best Use of TabPFN; Tinker optional. Deadline 2026-10-12 06:59 UTC. Repo: https://github.com/Abeera81/clear-hour. Brief: `agent_docs/project_brief.md`.
 
 ## Stack
 Python (uv venv, 3.12), CPU torch, tinker, tabpfn, pandas, scikit-learn, requests, astral, pydantic, python-dotenv. Windows + Git Bash. Details: `agent_docs/tech_stack.md`.

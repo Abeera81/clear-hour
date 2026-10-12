@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from score_forecast import best_pair, default_from_hour  # noqa: E402
 
-REPO = "https://github.com/Abeera81/field-window"
+REPO = "https://github.com/Abeera81/clear-hour"
 LC_N = [100, 250, 500, 1000, 2500, 5000]
 MODEL_KEY = {"M1 TabPFN v2": "tabpfn", "B2 CAMS+hour bias": "b2", "B0 raw CAMS": "b0", "B5 HistGBR": "hgb", "B4 Ridge": "ridge"}
 LABEL = {"M1 TabPFN v2": "TabPFN v2", "B2 CAMS+hour bias": "B2 hour-bias", "B0 raw CAMS": "B0 raw CAMS", "B5 HistGBR": "HistGBR", "B4 Ridge": "Ridge"}
