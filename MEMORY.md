@@ -8,7 +8,8 @@ Python (uv venv, 3.12), CPU torch, tinker, tabpfn, pandas, scikit-learn, request
 
 ## Status
 - Early read-only mid-day check 2026-10-11 (not scoring; no new files/commits touched forecast): pulled measured hourly PM2.5 from OpenAQ sensor 4554236 for 2026-10-11, 00:00-18:00 (19 h, 19:00-23:00 not yet measured). Measured ranged 18.2 (17h) to 84.1 (00h), notably lower overall than all three committed predictions' afternoon lows (B0 CAMS ~35-40 flat, B2 ~55-70, TabPFN ~49-65 vs measured 18-36 in 14-17h); measured 00-06h spiked higher (66-84) than CAMS-based models expected. AGENTS.md: added rules 12-16 (frozen forecast files read-only, no scoring yet, no public-repo/GitHub-settings changes, no force-push/amend, never touch/print .env). docs/outing_log.md: added 2026-10-11 ~17:20 entry (committed `349ee56`, pushed).
-- Repo bootstrap + agent docs: implemented; remote origin = https://github.com/Abeera81/field-window
+- Repo bootstrap + agent docs: implemented; remote origin = https://github.com/Abeera81/field-window (repo since renamed to Abeera81/clear-hour — same remote)
+- Repo made public + GitHub Pages enabled (2026-10-12 ~06:15 PKT, user did both manually per AGENTS.md rule 14): verified via `gh api repos/Abeera81/clear-hour` (private=false) and `.../pages` (source main:/docs, status building). Demo live and confirmed HTTP 200 at https://abeera81.github.io/clear-hour/ (30,707 bytes). README demo link updated to point at the live page.
 - Env (uv venv py3.12, deps, requirements.txt): tested
 - Capability probes: tested; Tinker ✅; TabPFN ✅ on **v2** only (v3.5 download stalls)
 - iNaturalist data probe: tested, plan dropped

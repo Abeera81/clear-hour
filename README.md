@@ -4,7 +4,7 @@
 
 Clear Hour is a local, open-source forecaster that ranks the hours of tomorrow by how breathable the air is in Islamabad / Rawalpindi, so a person can pick the cleanest window to go outside during smog season. It takes the free CAMS air-quality forecast (via Open-Meteo), corrects it with TabPFN v2 trained on a year of readings from a nearby low-cost sensor (via OpenAQ), and predicts hourly PM2.5 at that sensor. A forecast for a specific day is committed to git **before** the day, then scored against what the sensor measured.
 
-Demo page: [`docs/index.html`](docs/index.html) (self-contained; open it in a browser). Screenshots: [phone 390 px](results/demo_390.png), [desktop 1280 px](results/demo_1280.png).
+Demo page: **live at https://abeera81.github.io/clear-hour/** (GitHub Pages, served from [`docs/index.html`](docs/index.html), self-contained). Screenshots: [phone 390 px](results/demo_390.png), [desktop 1280 px](results/demo_1280.png).
 
 ## Try it
 
